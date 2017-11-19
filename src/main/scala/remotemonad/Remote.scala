@@ -56,6 +56,6 @@ object Remote {
     sendProcedure(Temperature)
 
   def toast (seconds : Int)(implicit decoder:Decoder[Unit], encoder:Encoder[Packet]): Remote[Unit] =
-    sendProcedure[Unit](Toast(seconds))
+    sendProcedure(Toast(seconds))
 
 }
