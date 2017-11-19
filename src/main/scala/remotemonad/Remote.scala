@@ -5,7 +5,7 @@ import cats.effect._
 import cats.implicits._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
-import shared._
+import shared.{Command, Say, Packet}
 
 case class Remote[T](remote : Kleisli[StateT[IO, List[Command], ?], Device, T])
 
@@ -21,10 +21,10 @@ object Remote {
     Remote(Kleisli.ask[StateT[IO, List[Command], ?], Device])
 
   def get : Remote[List[Command]] =
-    Remote(Kleisli {(device : Device) => StateT.get[IO, List[Command]]})
+    Remote(Kleisli.lift[StateT[IO, List[Command], ?], Device, List[Command]](StateT.get[IO, List[Command]]))
 
   def put(commands : List[Command]) : Remote[Unit] =
-    Remote(Kleisli {(device : Device) => StateT.set(commands)})
+    Remote(Kleisli.lift[StateT[IO, List[Command], ?], Device, Unit](StateT.set[IO, List[Command]](commands)))
 
   def say (message : String) : Remote[Unit] =
     sendCommand (Say(message))
@@ -42,7 +42,7 @@ object Remote {
   } yield result
 
   def sendCommand(cmd : Command) : Remote[Unit] =
-    Remote(Kleisli {(device : Device) => (StateT.modify ((lst : List[Command]) => cmd :: lst)) } )
+    Remote(Kleisli.lift[StateT[IO, List[Command], ?], Device, Unit](StateT.modify[IO, List[Command]](cmd :: _)))
 
   def sendProcedure[T](proc : Procedure[T])(implicit decoder:Decoder[T], encoder:Encoder[Packet]) : Remote[T] =
     for {
