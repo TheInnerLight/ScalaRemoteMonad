@@ -10,9 +10,7 @@ import shared._
 case class Remote[T](remote : Kleisli[StateT[IO, List[Command], ?], Device, T])
 
 object Remote {
-  def runRemote[T](x : Remote[T]): ReaderT[({
-    type Λ$[γ] = StateT[IO, List[Command], γ]
-  })#Λ$, Device, T] = x match {
+  def runRemote[T](x : Remote[T]): Kleisli[StateT[IO, List[Command], ?], Device, T] = x match {
     case Remote(ka) => ka
   }
 
