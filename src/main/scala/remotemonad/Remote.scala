@@ -52,8 +52,10 @@ object Remote {
       _ <- Remote.put(List.empty)
     } yield (Procedure.readReply(proc)(resultStr))
 
-  def temperature(implicit decoder:Decoder[Int], encoder:Encoder[Packet]): Remote[Int] = sendProcedure(Temperature)
+  def temperature(implicit decoder:Decoder[Int], encoder:Encoder[Packet]): Remote[Int] =
+    sendProcedure(Temperature)
 
-  def toast (seconds : Int)(implicit decoder:Decoder[Unit], encoder:Encoder[Packet]): Remote[Unit] = sendProcedure[Unit](Toast(seconds))
+  def toast (seconds : Int)(implicit decoder:Decoder[Unit], encoder:Encoder[Packet]): Remote[Unit] =
+    sendProcedure[Unit](Toast(seconds))
 
 }
